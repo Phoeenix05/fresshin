@@ -3,7 +3,7 @@ import { Handlers, PageProps } from "$fresh/server.ts"
 export const handler: Handlers<string | null> = {
     async GET(_, ctx) {
         const { name } = ctx.params
-        const resp = await fetch(`https://api.genshin.dev/characters/${name}`)
+        const resp = await fetch(`https://api.genshin.dev/artifacts/${name}`)
         if (resp.status == 404) {
             return ctx.render(null)
         }
@@ -12,9 +12,9 @@ export const handler: Handlers<string | null> = {
     }
 }
 
-export default function CharacterPage({ data }: PageProps<string | null>) {
+export default function ArtifactPage({ data }: PageProps<string | null>) {
     if (!data) {
-        return <h1>Character doesn't exist</h1>
+        return <h1>Artifact doesn't exist</h1>
     }
 
     return (
