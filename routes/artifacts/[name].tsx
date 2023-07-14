@@ -1,25 +1,50 @@
-import { Handlers, PageProps } from "$fresh/server.ts"
+import { Head } from "$fresh/runtime.ts";
+import { Handlers, PageProps, Status } from "$fresh/server.ts";
+import { tw } from "twind";
+import { ArtifactInfo, ArtifactTypes } from "../../util/types/genshin.gg.ts";
 
-export const handler: Handlers<string | null> = {
+export const handler: Handlers<{
+    name: string,
+    artifact: ArtifactInfo
+}> = {
     async GET(_, ctx) {
         const { name } = ctx.params
         const resp = await fetch(`https://api.genshin.dev/artifacts/${name}`)
-        if (resp.status == 404) {
-            return ctx.render(null)
+        if (resp.status != Status.OK) {
+            return ctx.renderNotFound()
         }
-        const character = await resp.json()
-        return ctx.render(character)
+        const artifact: ArtifactInfo = await resp.json()
+        return ctx.render({ name, artifact })
     }
 }
 
-export default function ArtifactPage({ data }: PageProps<string | null>) {
-    if (!data) {
-        return <h1>Artifact doesn't exist</h1>
-    }
-
+export default function ArtifactPage({ data }: PageProps<{
+    name: string,
+    artifact: ArtifactInfo
+}>) {
+    const { name, artifact } = data
+    const img_base = `https://api.genshin.dev/artifacts/${name}`
+    
     return (
-        <main>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-        </main>
+        <>
+            <Head>
+                <title>Fresshin - {artifact.name}</title>
+            </Head>
+            <main>
+                <h1>{artifact.name}</h1>
+                <p>{artifact.max_rarity}</p>
+                <p>{artifact["2-piece_bonus"]}</p>
+                <p>{artifact["4-piece_bonus"]}</p>
+                <section class={tw`flex flex-row flex-wrap`}>
+                    {ArtifactTypes.map((artifact) => (
+                        <img 
+                            class={tw`w-16`}
+                            src={`${img_base}/${artifact}`} 
+                            alt={artifact} 
+                        />
+                    ))}
+                </section>
+            </main>
+        </>
     )
 }
