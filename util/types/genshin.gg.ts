@@ -18,7 +18,7 @@ export type SkillTalent = {
     name: string
     unlocK: string
     description: string
-    type: "NORMAL_ATTACK" | "ELEMENTAL_SKILL" | "ELEMENTAL_SKILL"
+    type: "NORMAL_ATTACK" | "ELEMENTAL_SKILL" | "ELEMENTAL_BURST"
 }
 
 export type PassiveTalent = {
