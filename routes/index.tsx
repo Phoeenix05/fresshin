@@ -21,11 +21,13 @@ export default function Home({ data }: PageProps<string[]>) {
         <title>Fresshin - Genshin Impact</title>
       </Head>
       <div class={tw`flex flex-wrap gap-2 w-full justify-center`}>
-        {data.map((character) => <Icon
-          type="CHARACTER"
-          name={character}
-          link
-        />)}
+        {data.map((character) => (
+          <Icon
+            type="CHARACTER"
+            name={character}
+            link
+          />
+        ))}
       </div>
     </>
   );
