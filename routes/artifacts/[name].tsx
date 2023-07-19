@@ -35,10 +35,10 @@ export default function ArtifactPage({ data }: PageProps<{
         <p>{artifact.max_rarity}</p>
         <p>{artifact["2-piece_bonus"]}</p>
         <p>{artifact["4-piece_bonus"]}</p>
-        <section class={tw`flex flex-row flex-wrap`}>
+        <section class="flex flex-row flex-wrap">
           {ArtifactTypes.map((artifact) => (
             <img
-              class={tw`w-16`}
+              class="w-16"
               src={`${img_base}/${artifact}`}
               alt={artifact}
             />
