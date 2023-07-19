@@ -1,6 +1,5 @@
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps, Status } from "$fresh/server.ts";
-import { tw } from "twind";
 import { ArtifactInfo, ArtifactTypes } from "../../util/types/genshin.gg.ts";
 
 export const handler: Handlers<{
