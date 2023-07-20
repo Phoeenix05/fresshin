@@ -22,8 +22,27 @@ async function parse_data() {
     const encoded_data = await Deno.readFile(temp_dir + "/data.min.json")
     const data = decoder.decode(encoded_data)
     const json = JSON.parse(data)
-    const character = json["data"]["English"]["characters"]["aether"]
-    console.log(CharacterSchema.safeParse(character))
+    // const languages = Object.keys(json["data"]) // Languages other than english are ignored for now
+    const characters = Object.keys(json["data"]["English"]["characters"])
+    // console.log(await CharacterSchema.safeParseAsync(json["data"]["English"]["characters"][characters[49]]))
+
+    characters.forEach(async (character) => {
+        const character_data = json["data"]["English"]["characters"][character]
+        const image_data = json["image"]["characters"][character]
+        const character_status = await CharacterSchema.safeParseAsync(character_data)
+        const image_status = await CharacterImageSchema.safeParseAsync(image_data)
+        if (character_status.success && image_status.success) {
+            const data = JSON.stringify({
+                data: character_status.data,
+                images: image_status.data,
+            })
+            const encoder = new TextEncoder()
+            // TODO: Add the ability to change the prefix of the file. "english"
+            Deno.writeFile(`../resources/english-${character}.min.json`, encoder.encode(data))
+        } else {
+            console.log(`Data validation error: ${character}`)
+        }
+    })
 }
 
 function cleanup() {
@@ -66,6 +85,23 @@ const CharacterSchema = z.object({
 })
 type Character = z.infer<typeof CharacterSchema>
 
+const CharacterImageSchema = z.object({
+    image: z.string().url().optional(),
+    card: z.string().url().optional(),
+    protrait: z.string().url().optional(),
+    icon: z.string().url().optional(),
+    sideicon: z.string().url().optional(),
+    cover1: z.string().url().optional(),
+    cover2: z.string().url().optional(),
+    "hoyolab-avatar": z.string().url().optional(),
+    nameicon: z.string().optional(),
+    nameiconcard: z.string().optional(),
+    namegachasplash: z.string().optional(),
+    namegachaslice: z.string().optional(),
+    namesideicon: z.string().optional(),
+})
+type CharacterImages = z.infer<typeof CharacterImageSchema>
+
 //// Script main function or something like that
 
 const env = await load({ envPath: "./.env.local" })
@@ -90,6 +126,10 @@ const temp_dir = await Deno.makeTempDir({ prefix: "fresshin_temp" })
 await download_data() // Download 'github:theBowja/genshin-db-dist/.../data.min.json'
 // const data = await Deno.readFile(temp_dir + "/data.min.json") // This is here just to check if the downlaoded file exists
 
-await parse_data()
+try {
+    await parse_data()
+} catch (err) {
+    console.log(err)
+}
 
 cleanup()
