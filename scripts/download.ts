@@ -3,7 +3,7 @@
 import { load } from "https://deno.land/std@0.194.0/dotenv/mod.ts";
 import { Destination, download } from "https://deno.land/x/download@v2.0.2/mod.ts";
 import { confirm } from "https://deno.land/x/inquirer@v0.0.4/mod.ts";
-import { z } from "zod";
+// import { z } from "zod";
 
 async function download_data() {
     const url = "https://raw.githubusercontent.com/theBowja/genshin-db-dist/main/data/standard/data.min.json"
@@ -22,26 +22,40 @@ async function parse_data() {
     const encoded_data = await Deno.readFile(temp_dir + "/data.min.json")
     const data = decoder.decode(encoded_data)
     const json = JSON.parse(data)
-    // const languages = Object.keys(json["data"]) // Languages other than english are ignored for now
-    const characters = Object.keys(json["data"]["English"]["characters"])
-    // console.log(await CharacterSchema.safeParseAsync(json["data"]["English"]["characters"][characters[49]]))
 
-    characters.forEach(async (character) => {
-        const character_data = json["data"]["English"]["characters"][character]
-        const image_data = json["image"]["characters"][character]
-        const character_status = await CharacterSchema.safeParseAsync(character_data)
-        const image_status = await CharacterImageSchema.safeParseAsync(image_data)
-        if (character_status.success && image_status.success) {
-            const data = JSON.stringify({
-                data: character_status.data,
-                images: image_status.data,
-            })
-            const encoder = new TextEncoder()
-            // TODO: Add the ability to change the prefix of the file. "english"
-            Deno.writeFile(`../resources/english-${character}.min.json`, encoder.encode(data))
-        } else {
-            console.log(`Data validation error: ${character}`)
+    const languages = Object.keys(json["data"]) // Languages other than english are ignored for now
+    languages.forEach(async (lang) => {
+        try {
+            await Deno.mkdir(`../resources/${lang.toLowerCase()}`)
+        } catch {
+            console.log(`folder for lang '${lang}' already esists`)
         }
+
+        const characters = Object.keys(json["data"][lang]["characters"])
+        characters.forEach(async (character) => {
+            const character_data = json["data"][lang]["characters"][character]
+            const image_data = json["image"]["characters"][character]
+                const data = JSON.stringify({
+                    data: character_data,
+                    images: image_data,
+                })
+                const encoder = new TextEncoder()
+                await Deno.writeFile(`../resources/${lang.toLowerCase()}/${character}.min.json`, encoder.encode(data))
+            // const character_status = await CharacterSchema.safeParseAsync(character_data)
+            // const image_status = await CharacterImageSchema.safeParseAsync(image_data)
+            // if (character_status.success && image_status.success) {
+            //     const data = JSON.stringify({
+            //         data: character_status.data,
+            //         images: image_status.data,
+            //     })
+            //     const encoder = new TextEncoder()
+            //     await Deno.writeFile(`../resources/${lang.toLowerCase()}/${character}.min.json`, encoder.encode(data))
+            // } else {
+            //     // console.log(`Data validation error: ${character}, ${image_status}`)
+            //     console.log(character_status)
+            //     return
+            // }
+        })
     })
 }
 
@@ -50,57 +64,57 @@ function cleanup() {
 }
 
 //// Typedefs for well some sort of data validation
-const WeaponTypeSchema = z.enum(["Sword", "Claymore", "Polearm", "Bow", "Catalyst"])
-const RegionSchema = z.enum(["", "Mondstadt", "Liyue", "Inazuma", "Sumeru", "Fontaine", "Natlan", "Snezhnaya", "Khaenri'ah"])
+// const WeaponTypeSchema = z.enum(["Sword", "Claymore", "Polearm", "Bow", "Catalyst"])
+// const RegionSchema = z.enum(["", "Mondstadt", "Liyue", "Inazuma", "Sumeru", "Fontaine", "Natlan", "Snezhnaya", "Khaenri'ah"])
 
-const CharacterSchema = z.object({
-    name: z.string(),
-    fullname: z.string(),
-    title: z.string(),
-    description: z.string(),
-    rarity: z.string(),
-    element: z.enum(["None", "Geo", "Pyro", "Dendro", "Electro", "Cryo", "Hydro", "Anemo"]),
-    weapontype: WeaponTypeSchema,
-    substat: z.string(), // Change to enum at some point
-    gender: z.enum(["Male", "Female"]),
-    body: z.string(), // Change to enum at some point
-    association: z.string(), // Change to enum at some point
-    region: RegionSchema,
-    affiliation: z.string(), // There are too many affiliations to make this into a enum
-    birthdaymmdd: z.string(),
-    birthday: z.string(),
-    constellation: z.string(),
-    cv: z.object({
-        english: z.string(),
-        chinese: z.string(),
-        japanese: z.string(),
-        korean: z.string(),
-    }),
-    costs: z.record(z.string(), z.array(
-        z.object({
-            name: z.string(),
-            count: z.number(),
-        })
-    )),
-})
-type Character = z.infer<typeof CharacterSchema>
+// const CharacterSchema = z.object({
+//     name: z.string(),
+//     fullname: z.string(),
+//     title: z.string(),
+//     description: z.string(),
+//     rarity: z.string(),
+//     element: z.enum(["None", "Geo", "Pyro", "Dendro", "Electro", "Cryo", "Hydro", "Anemo"]),
+//     weapontype: WeaponTypeSchema,
+//     substat: z.string(), // Change to enum at some point
+//     gender: z.enum(["Male", "Female"]),
+//     body: z.string(), // Change to enum at some point
+//     association: z.string(), // Change to enum at some point
+//     region: RegionSchema,
+//     affiliation: z.string(), // There are too many affiliations to make this into a enum
+//     birthdaymmdd: z.string(),
+//     birthday: z.string(),
+//     constellation: z.string(),
+//     cv: z.object({
+//         english: z.string(),
+//         chinese: z.string(),
+//         japanese: z.string(),
+//         korean: z.string(),
+//     }),
+//     costs: z.record(z.string(), z.array(
+//         z.object({
+//             name: z.string(),
+//             count: z.number(),
+//         })
+//     )),
+// })
+// type Character = z.infer<typeof CharacterSchema>
 
-const CharacterImageSchema = z.object({
-    image: z.string().url().optional(),
-    card: z.string().url().optional(),
-    protrait: z.string().url().optional(),
-    icon: z.string().url().optional(),
-    sideicon: z.string().url().optional(),
-    cover1: z.string().url().optional(),
-    cover2: z.string().url().optional(),
-    "hoyolab-avatar": z.string().url().optional(),
-    nameicon: z.string().optional(),
-    nameiconcard: z.string().optional(),
-    namegachasplash: z.string().optional(),
-    namegachaslice: z.string().optional(),
-    namesideicon: z.string().optional(),
-})
-type CharacterImages = z.infer<typeof CharacterImageSchema>
+// const CharacterImageSchema = z.object({
+//     image: z.string().url().optional(),
+//     card: z.string().url().optional(),
+//     protrait: z.string().url().optional(),
+//     icon: z.string().url().optional(),
+//     sideicon: z.string().url().optional(),
+//     cover1: z.string().url().optional(),
+//     cover2: z.string().url().optional(),
+//     "hoyolab-avatar": z.string().url().optional(),
+//     nameicon: z.string().optional(),
+//     nameiconcard: z.string().optional(),
+//     namegachasplash: z.string().optional(),
+//     namegachaslice: z.string().optional(),
+//     namesideicon: z.string().optional(),
+// })
+// type CharacterImages = z.infer<typeof CharacterImageSchema>
 
 //// Script main function or something like that
 
