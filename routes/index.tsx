@@ -1,31 +1,26 @@
 import { Head } from "$fresh/runtime.ts";
-import { Handlers, PageProps, Status } from "$fresh/server.ts";
-import { Icon } from "../components/Icon.tsx";
+import { RouteContext } from "$fresh/server.ts";
+import { load_data } from "../util/load.ts";
 
-export const handler: Handlers<string[]> = {
-  async GET(_, ctx) {
-    const resp = await fetch(`https://api.genshin.dev/characters`);
-    if (resp.status != Status.OK) {
-      return ctx.renderNotFound();
-    }
-    const characters: string[] = await resp.json();
-    return ctx.render(characters);
-  },
+const load = async () => {
+  const characters: string[] = await load_data("english-characters");
+  const images: object = await load_data("images");
+  return { characters, images };
 };
 
-export default function Home({ data }: PageProps<string[]>) {
+export default async function Home(req: Request, ctx: RouteContext) {
+  const data = await load();
+
   return (
     <>
       <Head>
         <title>Fresshin - Genshin Impact</title>
       </Head>
       <div class="flex flex-wrap gap-2 w-full justify-center">
-        {data.map((character) => (
-          <Icon
-            type="CHARACTER"
-            name={character}
-            link
-          />
+        {data.characters.map((character) => (
+          <a href={`character/${character}`}>
+            <img src={data.images[character].icon} alt="" />
+          </a>
         ))}
       </div>
     </>

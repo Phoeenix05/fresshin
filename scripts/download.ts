@@ -15,14 +15,17 @@ async function download_data() {
 }
 
 async function parse_data() {
+    const encoder = new TextEncoder()
     const decoder = new TextDecoder("utf-8")
     const encoded_data = await Deno.readFile(temp_dir + "/data.min.json")
     const data = decoder.decode(encoded_data)
     const json = JSON.parse(data)
 
     const languages = ["ChineseSimplified", "English", "Japanese", "Korean"]
-    languages.forEach((lang) => {
+    languages.forEach(async (lang) => {
         const characters = Object.keys(json["data"][lang]["characters"])
+        const data = JSON.stringify(characters)
+        await Deno.writeFile(`../resources/${lang.toLowerCase()}-characters.min.json`, encoder.encode(data))
         characters.forEach(async (character) => {
             const character_data = json["data"][lang]["characters"][character]
             const image_data = json["image"]["characters"][character]
@@ -30,10 +33,10 @@ async function parse_data() {
                 data: character_data,
                 images: image_data,
             })
-            const encoder = new TextEncoder()
             await Deno.writeFile(`../resources/${lang.toLowerCase()}-${character.toLowerCase()}.min.json`, encoder.encode(data))
         })
     })
+    await Deno.writeFile(`../resources/images.min.json`, encoder.encode(JSON.stringify(json["image"]["characters"])))
 }
 
 function cleanup() {
