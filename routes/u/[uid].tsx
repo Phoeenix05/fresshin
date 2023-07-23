@@ -8,7 +8,9 @@ export const handler: Handlers<string> = {
       return ctx.renderNotFound()
     }
     const user = await resp.json()
-    return ctx.render(user)
+    const render = await ctx.render(user)
+    render.headers.append("Cache-Control", "max-age=300")
+    return render
   },
 }
 

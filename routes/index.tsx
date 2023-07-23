@@ -1,8 +1,8 @@
-import { Head } from "$fresh/runtime.ts";
-import { RouteContext } from "$fresh/server.ts";
-import { load_data } from "../util/load.ts";
-import { Images, ImagesSchema } from "../util/types.ts";
-import { validate } from "../util/validate.ts";
+import { Head } from "$fresh/runtime.ts"
+import { RouteContext } from "$fresh/server.ts"
+import { load_data } from "../util/load.ts"
+import { Images, ImagesSchema } from "../util/types.ts"
+import { validate } from "../util/validate.ts"
 
 const load = async () => {
   const characters: string[] = await load_data("english-characters")
