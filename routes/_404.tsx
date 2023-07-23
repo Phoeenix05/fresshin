@@ -1,4 +1,4 @@
-import { UnknownPageProps } from "$fresh/server.ts";
+import { UnknownPageProps } from "$fresh/server.ts"
 
 export default function NotFoundPage({ url }: UnknownPageProps) {
   return (
@@ -6,5 +6,5 @@ export default function NotFoundPage({ url }: UnknownPageProps) {
       <h1 class="text-2xl font-semibold">404 not found</h1>
       <p class="text-gray-400">{url.pathname}</p>
     </div>
-  );
+  )
 }

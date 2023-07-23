@@ -1,15 +1,19 @@
-import { Head } from "$fresh/runtime.ts";
-import { RouteContext } from "$fresh/server.ts";
-import { image } from "../../util/image.ts";
-import { load_data } from "../../util/load.ts";
+import { Head } from "$fresh/runtime.ts"
+import { RouteContext } from "$fresh/server.ts"
+import { image } from "../../util/image.ts"
+import { load_data } from "../../util/load.ts"
+import { Character, CharacterSchema } from "../../util/types.ts"
+import { validate } from "../../util/validate.ts"
 
 const load = async (name: string) => {
-  return await load_data<{ data: object; images: object }>(`english-${name}`);
-};
+  const data: Character = await load_data(`english-${name}`)
+  validate(CharacterSchema, data)
+  return data
+}
 
 export default async function CharacterPage(req: Request, ctx: RouteContext) {
-  const { name } = ctx.params;
-  const { data, images } = await load(name);
+  const { name } = ctx.params
+  const { data, images } = await load(name)
 
   return (
     <>
@@ -17,7 +21,7 @@ export default async function CharacterPage(req: Request, ctx: RouteContext) {
         <title>Fresshin - {name}</title>
       </Head>
       <main>
-        <img src={image(images.namegachasplash)} />
+        <img src={image(images.namegachasplash || images.nameicon || "")} />
         <h1>{data.name}</h1>
         <p>{data.element}</p>
         <p>{data.weapontype}</p>
@@ -26,5 +30,5 @@ export default async function CharacterPage(req: Request, ctx: RouteContext) {
         <p>{data.birthday} ({data.birthdaymmdd})</p>
       </main>
     </>
-  );
+  )
 }

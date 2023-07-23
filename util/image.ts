@@ -1,7 +1,7 @@
 /**
  * @param name is something like "UI_AvatarIcon_Albedo".
- * @returns 
+ * @returns
  */
 export const image = (name: string): string => {
-    return `${Deno.env.get("IMAGE_URL")}/${name}.png`
+  return `${Deno.env.get("IMAGE_URL")}/${name}.png`
 }
