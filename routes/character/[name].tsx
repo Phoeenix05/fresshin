@@ -28,6 +28,10 @@ export default async function CharacterPage(req: Request, ctx: RouteContext) {
         <p>{data.description}</p>
         <p>{data.constellation}</p>
         <p>{data.birthday} ({data.birthdaymmdd})</p>
+        <p>English: {data.cv["english"]}</p>
+        <p>Chinese: {data.cv["chinese"]}</p>
+        <p>Japanese: {data.cv["japanese"]}</p>
+        <p>Korean: {data.cv["korean"]}</p>
       </main>
     </>
   )

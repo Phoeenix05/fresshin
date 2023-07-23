@@ -3,7 +3,11 @@
   "tasks": {
     "start": "deno run -A --watch=static/,routes/ dev.ts",
     "update": "deno run -A -r https://fresh.deno.dev/update .",
-    "fmt": "deno fmt routes components islands util"
+    "fmt": "deno fmt routes components islands util",
+    "resdl-build": "cd resdl && cargo build ",
+    "resdl-build:release": "cd resdl && cargo build --release ",
+    "resdl-run": "cd resdl && cargo run ",
+    "resdl-run:release": "cd resdl && cargo run --release "
   },
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.3.1/",
