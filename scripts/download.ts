@@ -18,8 +18,8 @@ async function parse_data() {
     const encoder = new TextEncoder()
     const decoder = new TextDecoder("utf-8")
     const encoded_data = await Deno.readFile(temp_dir + "/data.min.json")
-    const data = decoder.decode(encoded_data)
-    const json = JSON.parse(data)
+    const json = JSON.parse(decoder.decode(encoded_data))
+    await Deno.writeFile(`../resources/images.min.json`, encoder.encode(JSON.stringify(json["image"]["characters"])))
 
     const languages = ["ChineseSimplified", "English", "Japanese", "Korean"]
     languages.forEach(async (lang) => {
@@ -27,16 +27,23 @@ async function parse_data() {
         const data = JSON.stringify(characters)
         await Deno.writeFile(`../resources/${lang.toLowerCase()}-characters.min.json`, encoder.encode(data))
         characters.forEach(async (character) => {
-            const character_data = json["data"][lang]["characters"][character]
+            const character_info = json["data"][lang]["characters"][character]
+            const constellations = json["data"][lang]["constellations"][character]
             const image_data = json["image"]["characters"][character]
+            const stats = json["stats"]["characters"][character]
+            const talent_stats = json["stats"]["talents"][character]
             const data = JSON.stringify({
-                data: character_data,
+                info: character_info,
+                constellations: constellations,
                 images: image_data,
+                stats: {
+                    character: stats,
+                    talents: talent_stats,
+                }
             })
             await Deno.writeFile(`../resources/${lang.toLowerCase()}-${character.toLowerCase()}.min.json`, encoder.encode(data))
         })
     })
-    await Deno.writeFile(`../resources/images.min.json`, encoder.encode(JSON.stringify(json["image"]["characters"])))
 }
 
 function cleanup() {

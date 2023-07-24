@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const CharacterDataSchema = z.object({
+export const CharacterInfoSchema = z.object({
   "name": z.string(),
   "fullname": z.string(),
   "title": z.string(),
@@ -29,7 +29,24 @@ export const CharacterDataSchema = z.object({
     })),
   ),
 })
-export type CharacterData = z.infer<typeof CharacterDataSchema>
+export type CharacterInfo = z.infer<typeof CharacterInfoSchema>
+
+export const ConstellationSchema = z.object({
+  "name": z.string(),
+  "effect": z.string(),
+})
+export type Constellation = z.infer<typeof ConstellationSchema>
+
+export const ConstellationsSchema = z.object({
+  "name": z.string(),
+  "c1": ConstellationSchema,
+  "c2": ConstellationSchema,
+  "c3": ConstellationSchema,
+  "c4": ConstellationSchema,
+  "c5": ConstellationSchema,
+  "c6": ConstellationSchema,
+})
+export type Constellations = z.infer<typeof ConstellationsSchema>
 
 export const ImageSchema = z.object({
   "image": z.string().url().optional(),
@@ -48,9 +65,57 @@ export const ImageSchema = z.object({
 })
 export type Image = z.infer<typeof ImageSchema>
 
+export const BaseStatsSchema = z.object({
+  "hp": z.number(),
+  "attack": z.number(),
+  "defense": z.number(),
+  "critrate": z.number(),
+  "critdmg": z.number(),
+})
+export type BaseStats = z.infer<typeof BaseStatsSchema>
+
+export const StatsCurveSchema = z.object({
+  "hp": z.string(),
+  "attack": z.string(),
+  "defense": z.string(),
+})
+export type StatsCurve = z.infer<typeof StatsCurveSchema>
+
+export const PromotionSchema = z.object({
+  "maxlevel": z.number(),
+  "hp": z.number(),
+  "attack": z.number(),
+  "defense": z.number(),
+  "specialized": z.number(),
+})
+export type Promotion = z.infer<typeof PromotionSchema>
+
+export const CharacterStatsSchema = z.object({
+  "base": BaseStatsSchema,
+  "curve": StatsCurveSchema,
+  "specialized": z.string(),
+  "promotion": z.array(PromotionSchema),
+})
+export type CharacterStats = z.infer<typeof CharacterStatsSchema>
+
+export const TalentStatsSchema = z.object({
+  "combat1": z.record(z.string(), z.array(z.number())),
+  "combat2": z.record(z.string(), z.array(z.number())),
+  "combat3": z.record(z.string(), z.array(z.number())),
+})
+export type TalentStats = z.infer<typeof TalentStatsSchema>
+
+export const StatsSchema = z.object({
+  "character": CharacterStatsSchema,
+  "talents": TalentStatsSchema,
+})
+export type Stats = z.infer<typeof StatsSchema>
+
 export const CharacterSchema = z.object({
-  data: CharacterDataSchema,
+  info: CharacterInfoSchema,
+  constellations: ConstellationsSchema,
   images: ImageSchema,
+  stats: StatsSchema,
 })
 export type Character = z.infer<typeof CharacterSchema>
 

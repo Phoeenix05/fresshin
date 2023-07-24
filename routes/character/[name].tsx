@@ -13,7 +13,7 @@ const load = async (name: string) => {
 
 export default async function CharacterPage(req: Request, ctx: RouteContext) {
   const { name } = ctx.params
-  const { data, images } = await load(name)
+  const { info, images } = await load(name)
 
   return (
     <>
@@ -22,16 +22,16 @@ export default async function CharacterPage(req: Request, ctx: RouteContext) {
       </Head>
       <main>
         <img src={image(images.namegachasplash || images.nameicon || "")} />
-        <h1>{data.name}</h1>
-        <p>{data.element}</p>
-        <p>{data.weapontype}</p>
-        <p>{data.description}</p>
-        <p>{data.constellation}</p>
-        <p>{data.birthday} ({data.birthdaymmdd})</p>
-        <p>English: {data.cv["english"]}</p>
-        <p>Chinese: {data.cv["chinese"]}</p>
-        <p>Japanese: {data.cv["japanese"]}</p>
-        <p>Korean: {data.cv["korean"]}</p>
+        <h1>{info.name}</h1>
+        <p>{info.element}</p>
+        <p>{info.weapontype}</p>
+        <p>{info.description}</p>
+        <p>{info.constellation}</p>
+        <p>{info.birthday} ({info.birthdaymmdd})</p>
+        <p>English: {info.cv["english"]}</p>
+        <p>Chinese: {info.cv["chinese"]}</p>
+        <p>Japanese: {info.cv["japanese"]}</p>
+        <p>Korean: {info.cv["korean"]}</p>
       </main>
     </>
   )
