@@ -21,7 +21,11 @@ export default async function CharacterPage(req: Request, ctx: RouteContext) {
         <title>Fresshin - {name}</title>
       </Head>
       <main>
-        <img src={image(images.namegachasplash || images.nameicon || "")} />
+        <object data={image(images.namegachasplash || "")} type="image/png">
+          <object data={image(images.nameicon || "")} type="image/png">
+            <img src={images.icon} />
+          </object>
+        </object>
         <h1>{info.name}</h1>
         <p>{info.element}</p>
         <p>{info.weapontype}</p>

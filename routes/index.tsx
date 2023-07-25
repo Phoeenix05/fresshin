@@ -1,5 +1,6 @@
 import { Head } from "$fresh/runtime.ts"
 import { RouteContext } from "$fresh/server.ts"
+import { image } from "../util/image.ts"
 import { load_data } from "../util/load.ts"
 import { Images, ImagesSchema } from "../util/types.ts"
 import { validate } from "../util/validate.ts"
@@ -22,7 +23,9 @@ export default async function Home(req: Request, ctx: RouteContext) {
       <div class="flex flex-wrap gap-2 w-full justify-center">
         {data.characters.map((character) => (
           <a href={`character/${character}`}>
-            <img src={data.images[character].icon} width="128" />
+            <object data={image(data.images[character].nameicon || "")} type="image/png" width="128">
+              <img src={data.images[character].icon} width="128" />
+            </object>
           </a>
         ))}
       </div>
